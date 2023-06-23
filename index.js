@@ -46,6 +46,13 @@ let items = [
     price: 31000,
     isActive: false,
     createdOn: "2023-06-14"
+  },
+  {
+    name: "PS4",
+    description: "Home console designed by Sony and was released on Fall 2013",
+    price: 18000,
+    isActive: false,
+    createdOn: "2022-06-12"
   }
 ];
 
@@ -75,10 +82,10 @@ const locateUser = users.find(user => user.email === req.body.email);
 
 // login
 app.post('/users/login', (req, res) => {
-  console.log(req.body);
+console.log(req.body);
 
 
-// find the user with the same username and password from our request body
+// find the user with the same email and password from our request body
 let findUser = users.find((user) => {
     return user.email === req.body.email;
 });
@@ -118,7 +125,7 @@ app.put('/users/admin/:index', checkLoggedIn, (req, res) => { //:index meaning c
         console.log(users[userIndex]);
         res.send('User is now Admin');
     } else {
-        res.send('Unauthorized User is Access Denied');
+        res.send('Unauthorized User has been Denied Access.');
     }
 });
 
@@ -132,7 +139,7 @@ console.log(req.body);
         description: req.body.description,
         price: req.body.price,
         isActive: req.body.isActive || true,
-        createdOn: req.body.createdOn || new Date()
+        createdOn: req.body.createdOn
     }
     items.push(newItem);
     console.log(items);
@@ -294,8 +301,29 @@ app.delete('/order/remove/:index', (req, res) => {
     }
 });
 
+// Compute subtotal for each item
+app.get('/order/subtotal', (req, res) => {
+    if (loggedUser) {
+        const userOrders = orders.filter(order => order.emailId === loggedUser.email);
+
+        const items = userOrders.flatMap(order => {
+            return order.products.map(product => {
+                const subtotal = product.price * order.quantity;
+                return {
+                    ...product,
+                    subtotal
+                };
+            });
+        });
+
+        res.json(items);/orde
+    } else {
+        res.status(401).send('Unauthorized Access & please login.');
+    }
+});
+
 // Compute total price for all items in the cart
-app.get('/order/total', (req, res) => {
+app.get('r/total', (req, res) => {
     let total = 0;
     if (loggedUser) {
         const userOrders = orders.filter(order => order.emailId === loggedUser.email);
@@ -304,14 +332,14 @@ app.get('/order/total', (req, res) => {
                 total += product.price * order.quantity;
             });
         });
-    res.send(`Total price for all items in the cart: $${total.toFixed(2)}`);
+    res.send(`Total price for all items in the cart: P${total.toFixed(2)}`);
     } else {
         res.status(401).send('Unauthorized Access & please login.');
     }
 });
 
 // get all orders
-app.get('/order/allOrders', (req, res) => {
+app.get('/order/all', (req, res) => {
     console.log(req.body);
     if (loggedUser.isAdmin === true) {
         res.send(orders);
