@@ -323,7 +323,7 @@ app.get('/order/subtotal', (req, res) => {
 });
 
 // Compute total price for all items in the cart
-app.get('r/total', (req, res) => {
+app.get('order/total', (req, res) => {
     let total = 0;
     if (loggedUser) {
         const userOrders = orders.filter(order => order.emailId === loggedUser.email);
