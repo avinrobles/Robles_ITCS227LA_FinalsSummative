@@ -316,7 +316,7 @@ app.get('/order/subtotal', (req, res) => {
             });
         });
 
-        res.json(items);/orde
+        res.json(items);
     } else {
         res.status(401).send('Unauthorized Access & please login.');
     }
